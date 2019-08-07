@@ -42,6 +42,10 @@ class GSphere(collections.Sequence):
         """|numpy-array| with the G-vectors in reduced coordinates."""
         return self._gvecs
 
+    @gvecs.setter
+    def gvecs(self, new_gvecs):
+        self._gvecs = new_gvecs
+
     #@property
     #def get_kpg2(self):
     #    """ndarray with |k+G|**2. in atomic unit"""

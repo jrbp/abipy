@@ -145,7 +145,8 @@ class WaveFunction(object):
         """The mesh used for the FFT."""
         return self._mesh
 
-    def set_mesh(self, mesh):
+    @mesh.setter
+    def mesh(self, mesh):
         """Change the FFT mesh. `u(r)` will be computed on this box."""
         assert isinstance(mesh, Mesh3D)
         self._mesh = mesh
@@ -303,21 +304,26 @@ class PWWaveFunction(WaveFunction):
         from abipy.tools.numtools import BlochRegularGridInterpolator
         return BlochRegularGridInterpolator(self.structure, self.ur)
 
-    #def pww_translation(self, gvector, rprimd):
-    #    """Returns the pwwave of the kpoint translated by one gvector."""
-    #    gsph = self.gsphere.copy()
-    #    wpww = PWWaveFunction(self.structure, self.nspinor, self.spin, self.band, gsph, self.ug.copy())
-    #    wpww.mesh = self.mesh
-    #    wpww.pww_translation_inplace(gvector, rprimd)
-    #    return wpww
+    # uncomented from abipy code, added default rprimd, needs testing
+    def pww_translation(self, gvector, rprimd=None):
+        """Returns the pwwave of the kpoint translated by one gvector."""
+        if rprimd is None:
+            rprimd = self.structure.lattice.matrix
+        gsph = self.gsphere.copy()
+        wpww = PWWaveFunction(self.structure, self.nspinor, self.spin, self.band, gsph, self.ug.copy())
+        wpww.mesh = self.mesh
+        wpww.pww_translation_inplace(gvector, rprimd)
+        return wpww
 
-    #def pww_translation_inplace(self, gvector, rprimd):
-    #    """Translates the pwwave from 1 kpoint by one gvector."""
-    #    self.gsphere.kpoint = self.gsphere.kpoint + gvector
-    #    self.gsphere.gvecs = self.gsphere.gvecs + gvector
-    #    fft_ndivs = (self.mesh.shape[0] + 2, self.mesh.shape[1] + 2, self.mesh.shape[2] + 2)
-    #    newmesh = Mesh3D(fft_ndivs, rprimd, pbc=True)
-    #    self.mesh = newmesh
+    def pww_translation_inplace(self, gvector, rprimd=None):
+        """Translates the pwwave from 1 kpoint by one gvector."""
+        if rprimd is None:
+            rprimd = self.structure.lattice.matrix
+        self.gsphere.kpoint = self.gsphere.kpoint + gvector
+        self.gsphere.gvecs = self.gsphere.gvecs + gvector.frac_coords
+        fft_ndivs = (self.mesh.shape[0] + 2, self.mesh.shape[1] + 2, self.mesh.shape[2] + 2)
+        newmesh = Mesh3D(fft_ndivs, rprimd)
+        self.mesh = newmesh
 
     #def pwwtows_inplace(self):
     #    """Wrap the kpoint to the interval ]-1/2,1/2] and update pwwave accordingly."""

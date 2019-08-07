@@ -154,7 +154,8 @@ class WfkFile(AbinitNcFile, Has_Header, Has_Structure, Has_ElectronBands, Notebo
         # Istantiate the wavefunction object and set the FFT mesh
         # using the divisions reported in the WFK file.
         wave = PWWaveFunction(self.structure, self.nspinor, spin, band, self.gspheres[ik], ug_skb)
-        wave.set_mesh(self.fft_mesh)
+        # wave.set_mesh(self.fft_mesh)
+        wave.mesh = self.fft_mesh
 
         return wave
 
