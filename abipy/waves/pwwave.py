@@ -293,7 +293,7 @@ class PWWaveFunction(WaveFunction):
         elif space == "gsphere":
             return np.vdot(self.ug, other.ug)
         elif space == "r":
-            return np.vdot(self.ur, other.ur) / self.mesh.size
+            return np.vdot(self.ur, other.get_ur_mesh(self.mesh, copy=False)) / self.mesh.size
         else:
             raise ValueError("Wrong space: %s" % str(space))
 
