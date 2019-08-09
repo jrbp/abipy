@@ -321,9 +321,7 @@ class PWWaveFunction(WaveFunction):
             rprimd = self.structure.lattice.matrix
         self.gsphere.kpoint = self.gsphere.kpoint + gvector
         self.gsphere.gvecs = self.gsphere.gvecs + gvector.frac_coords
-        fft_ndivs = (self.mesh.shape[0] + 2, self.mesh.shape[1] + 2, self.mesh.shape[2] + 2)
-        newmesh = Mesh3D(fft_ndivs, rprimd)
-        self.mesh = newmesh
+        self.delete_ur()
 
     #def pwwtows_inplace(self):
     #    """Wrap the kpoint to the interval ]-1/2,1/2] and update pwwave accordingly."""
