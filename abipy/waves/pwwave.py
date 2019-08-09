@@ -319,8 +319,8 @@ class PWWaveFunction(WaveFunction):
         """Translates the pwwave from 1 kpoint by one gvector."""
         if rprimd is None:
             rprimd = self.structure.lattice.matrix
-        self.gsphere.kpoint = self.gsphere.kpoint + gvector
-        self.gsphere.gvecs = self.gsphere.gvecs + gvector.frac_coords
+        self.gsphere.kpoint = self.gsphere.kpoint + Kpoint(gvector, self.gsphere.kpoint.lattice)
+        self.gsphere.gvecs = self.gsphere.gvecs + gvector
         self.delete_ur()
 
     #def pwwtows_inplace(self):
