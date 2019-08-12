@@ -103,7 +103,9 @@ class WaveFunction(object):
         """Periodic part of the wavefunctions in G-space."""
         return self._ug
 
-    def set_ug(self, ug):
+    # def set_ug(self, ug):
+    @ug.setter
+    def ug(self, ug):
         """Set the value of the u(nspinor, G) array."""
         if ug.shape != self.shape:
             raise ValueError("Input ug shape %s differs from the one stored in self %s" % (ug.shape, self.shape))
@@ -307,8 +309,6 @@ class PWWaveFunction(WaveFunction):
     # uncomented from abipy code, added default rprimd, needs testing
     def pww_translation(self, gvector, rprimd=None):
         """Returns the pwwave of the kpoint translated by one gvector."""
-        if rprimd is None:
-            rprimd = self.structure.lattice.matrix
         gsph = self.gsphere.copy()
         wpww = PWWaveFunction(self.structure, self.nspinor, self.spin, self.band, gsph, self.ug.copy())
         wpww.mesh = self.mesh
@@ -322,6 +322,22 @@ class PWWaveFunction(WaveFunction):
         self.gsphere.kpoint = self.gsphere.kpoint + Kpoint(gvector, self.gsphere.kpoint.lattice)
         self.gsphere.gvecs = self.gsphere.gvecs + gvector
         self.delete_ur()
+
+    def pww_rspace_translation(self, tau):
+        gsph = self.gsphere.copy()
+        wpww = PWWaveFunction(self.structure, self.nspinor, self.spin, self.band, gsph, self.ug.copy())
+        wpww.mesh = self.mesh
+        wpww.pww_rspace_translation_inplace(tau)
+        return wpww
+
+
+    def pww_rspace_translation_inplace(self, tau):
+        # JRB
+        # below commented out rotate function can take care of this
+        # not sure why it's commented out so I'm using my own version for now
+        f1 = np.e**(-2 * np.pi * 1.j * np.dot(self.kpoint.frac_coords, np.array(tau)))
+        f2 = np.e**(-2 * np.pi * 1.j * np.inner(self.gsphere.gvecs, np.array(tau)))
+        self.ug = self.ug * f2 * f1
 
     #def pwwtows_inplace(self):
     #    """Wrap the kpoint to the interval ]-1/2,1/2] and update pwwave accordingly."""
