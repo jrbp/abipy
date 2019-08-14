@@ -320,7 +320,7 @@ class PWWaveFunction(WaveFunction):
         if rprimd is None:
             rprimd = self.structure.lattice.matrix
         self.gsphere.kpoint = self.gsphere.kpoint + Kpoint(gvector, self.gsphere.kpoint.lattice)
-        self.gsphere.gvecs = self.gsphere.gvecs + gvector
+        self.gsphere.gvecs = self.gsphere.gvecs - gvector
         self.delete_ur()
 
     def pww_rspace_translation(self, tau):
